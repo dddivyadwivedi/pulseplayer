@@ -1,10 +1,9 @@
-import { Text, View } from "react-native"
+import SignUp from "@views/auth/SignUp"
+import { Text, View , SafeAreaView } from "react-native"
 
 const App = ()=>{
   return(
-    <View>
-      <Text>Hello World</Text>
-    </View>
+    <SignUp/>
   )
 }
 export default App
