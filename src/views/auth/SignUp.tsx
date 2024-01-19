@@ -8,86 +8,84 @@ import {
   View,
   Button,
 } from 'react-native';
-import AuthInput from '@components/AuthInputField';
-
+import AuthInput from '@components/form/AuthInputField';
+import {Formik, validateYupSchema, useFormikContext} from 'formik';
+import * as yup from 'yup';
+import Form from '@components/form';
+import SubmitBtn from '@components/form/SubmitBtn';
 interface SignUpProps {
   // Add your component's props here
 }
+const signUpSchema = yup.object({
+  name: yup
+    .string()
+    .trim('Name is missing')
+    .min(3, 'Invalid name!')
+    .required('Name is required!'),
+  email: yup
+    .string()
+    .trim('Email is missing')
+    .email('Invalid email!')
+    .required('Email is required!'),
+  password: yup
+    .string()
+    .trim('Password is missing')
+    .min(8, 'Password is too short!')
+    .matches(
+      /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/,
+      'Password is too simple',
+    )
+    .required('Password is required!'),
+});
+
+const initialValues = {
+  name: '',
+  email: '',
+  password: '',
+};
 
 const SignUp: React.FC<SignUpProps> = props => {
-  const [userInfo, setUserInfo] = useState({
-    name: '',
-    email: '',
-    password: '',
-  });
-  const [errorInfo, setErrorInfo] = useState({
-    name: '',
-    email: '',
-    password: '',
-  });
+  const context = useFormikContext();
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.formContainer}>
-        <AuthInput
-          placeholder="John Doe"
-          label="Name"
-          containerStyle={styles.marginBottom}
-          onChange={text => {
-            setUserInfo({...userInfo, name: text});
-          }}
-          errorMsg={errorInfo.name}
-        />
-        <AuthInput
-          placeholder="john@email.com"
-          label="Email"
-          keybordType="email-address"
-          autoCapitalize="none"
-          containerStyle={styles.marginBottom}
-          onChange={text => {
-            setUserInfo({...userInfo, email: text});
-          }}
-          errorMsg={errorInfo.email}
-        />
-        <AuthInput
-          placeholder="******"
-          label="Password"
-          autoCapitalize="none"
-          secureTextEntry
-          containerStyle={styles.marginBottom}
-          onChange={text => {
-            setUserInfo({...userInfo, password: text});
-          }}
-          errorMsg={errorInfo.password}
-        />
-
-        <Button
-          title="Sign up"
-          onPress={() => {
-            if (!userInfo.name) {
-              return setErrorInfo({
-                email : '',
-                password : '',
-                name: 'Name is missing',
-              });
-            }
-            if (!userInfo.email) {
-              return setErrorInfo({
-            
-                name : '',
-                password : '',
-                email: 'Email is missing',
-              });
-            }
-            if (!userInfo.password) {
-              return setErrorInfo({
-                name : '',
-                email : '',
-                password: 'Password is missing',
-              });
-            }
-          }}
-        />
-      </View>
+      <Form
+        onSubmit={values => {
+          console.log(values);
+        }}
+        initialValues={initialValues}
+        validationSchema={signUpSchema}>
+        <View style={styles.formContainer}>
+          <AuthInput
+            placeholder="John Doe"
+            label="Name"
+            name='name'
+            containerStyle={styles.marginBottom}
+            // onChange={handleChange('name')}
+            // value={values.name}
+            // errorMsg={errors.name}
+          />
+          <AuthInput
+            placeholder="john@email.com"
+            label="Email"
+            name='email'
+            keybordType="email-address"
+            autoCapitalize="none"
+            containerStyle={styles.marginBottom}
+    
+          />
+          <AuthInput
+          name='password'
+            placeholder="******"
+            label="Password"
+            autoCapitalize="none"
+            secureTextEntry
+            containerStyle={styles.marginBottom}
+         
+          />
+         <SubmitBtn title='SignUp'/>
+        </View>
+      </Form>
     </SafeAreaView>
   );
 };
